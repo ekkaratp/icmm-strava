@@ -1,2 +1,4 @@
 node_modules
 examples/login/auth_data\.txt
+
+examples/login/env\.sh
