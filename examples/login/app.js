@@ -1,11 +1,16 @@
 var express = require('express')
   , passport = require('passport')
   , util = require('util')
-  , StravaStrategy = require('passport-strava-oauth2').Strategy;
+  , StravaStrategy = require('passport-strava-oauth2').Strategy
+  , fs = require('fs');;
+var urlencode = require('urlencode');
 
 var STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
 var STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
-
+var BIND_ADDRESS = process.env.BIND_ADDRESS || "localhost";
+var PORT = process.env.PORT || 3000;
+var CALL_BACK_URL = process.env.CALL_BACK_URL || `${BIND_ADDRESS}:${PORT}`;
+var AUTH_DATA_FILE = process.env.AUTH_DATA_FILE || "./auth_data.txt";
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -30,7 +35,7 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new StravaStrategy({
     clientID: STRAVA_CLIENT_ID,
     clientSecret: STRAVA_CLIENT_SECRET,
-    callbackURL: "http://127.0.0.1:3000/auth/strava/callback"
+    callbackURL: `http://${CALL_BACK_URL}`
   },
   function(accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
@@ -58,7 +63,7 @@ app.configure(function() {
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.session({ secret: 'keyboard cat' }));
+  app.use(express.session({ secret: 'intania icmm' }));
   // Initialize Passport!  Also use passport.session() middleware, to support
   // persistent login sessions (recommended).
   app.use(passport.initialize());
@@ -86,7 +91,7 @@ app.get('/login', function(req, res){
 //   redirecting the user to strava.com.  After authorization, Strava
 //   will redirect the user back to this application at /auth/strava/callback
 app.get('/auth/strava',
-  passport.authenticate('strava', { scope: ['public'] }),
+  passport.authenticate('strava', { scope: ['public']}),
   function(req, res){
     // The request will be redirected to Strava for authentication, so this
     // function will not be called.
@@ -100,6 +105,14 @@ app.get('/auth/strava',
 app.get('/auth/strava/callback', 
   passport.authenticate('strava', { failureRedirect: '/login' }),
   function(req, res) {
+    // Log token/code and save them to a file.
+    var user = req.user
+    var code = req.query.code
+    console.log(`Code:${code}, Authorized user:`);
+    console.log(user._raw);
+
+    var data = `${user.id},${user.displayName},${user.token},${code}\n`;
+    fs.appendFileSync(AUTH_DATA_FILE, data);
     res.redirect('/');
   });
 
@@ -108,7 +121,8 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
-app.listen(3000);
+app.listen(PORT, BIND_ADDRESS);
+console.log(`App listen ${BIND_ADDRESS}:${PORT}`);
 
 
 // Simple route middleware to ensure user is authenticated.
