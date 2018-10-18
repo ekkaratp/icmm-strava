@@ -35,7 +35,7 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new StravaStrategy({
     clientID: STRAVA_CLIENT_ID,
     clientSecret: STRAVA_CLIENT_SECRET,
-    callbackURL: `http://${CALL_BACK_URL}`
+    callbackURL: `${CALL_BACK_URL}`
   },
   function(accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
