@@ -9,7 +9,7 @@ var STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
 var STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
 var BIND_ADDRESS = process.env.BIND_ADDRESS || "localhost";
 var PORT = process.env.PORT || 3000;
-var CALL_BACK_URL = process.env.CALL_BACK_URL || `${BIND_ADDRESS}:${PORT}`;
+var CALL_BACK_URL = process.env.CALL_BACK_URL || `http://${BIND_ADDRESS}:${PORT}`;
 var AUTH_DATA_FILE = process.env.AUTH_DATA_FILE || "./auth_data.txt";
 
 // Passport session setup.
@@ -79,10 +79,6 @@ app.get('/', function(req, res){
 
 app.get('/account', ensureAuthenticated, function(req, res){
   res.render('account', { user: req.user });
-});
-
-app.get('/login', function(req, res){
-  res.render('login', { user: req.user });
 });
 
 // GET /auth/strava

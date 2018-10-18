@@ -1,5 +1,8 @@
 <% if (!user) { %>
-	<h2>Welcome! Please log in.</h2>
+	<img src="logo.png" class="img-thumbnail"/>
+	<h2>Log in เพื่อเข้าร่วมเก็บระยะวิ่งด้วย Strava</h2>
 <% } else { %>
-	<h2>Hello, <%= user.displayName %>.</h2>
+	<img src="<%= user.photos[0].value %>" class="img-thumbnail">
+	<h2><%= user.displayName %></h2>
+	<h4>ลงทะเบียน Challenge สำเร็จแล้ว</h4>
 <% } %>
