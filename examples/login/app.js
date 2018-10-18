@@ -77,9 +77,9 @@ app.get('/', function(req, res){
   res.render('index', { user: req.user });
 });
 
-app.get('/account', ensureAuthenticated, function(req, res){
-  res.render('account', { user: req.user });
-});
+// app.get('/account', ensureAuthenticated, function(req, res){
+//   res.render('account', { user: req.user });
+// });
 
 // GET /auth/strava
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -107,7 +107,9 @@ app.get('/auth/strava/callback',
     console.log(`Code:${code}, Authorized user:`);
     console.log(user._raw);
 
-    var data = `${user.id},${user.displayName},${user.token},${code}\n`;
+    // Format: timestamp,user_id,user_displayname,token,code
+    var timestamp = Date.now();
+    var data = `${timestamp},${user.id},${user.displayName},${user.token},${code}\n`;
     fs.appendFileSync(AUTH_DATA_FILE, data);
     res.redirect('/');
   });
